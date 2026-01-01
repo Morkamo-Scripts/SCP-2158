@@ -1,5 +1,6 @@
 ﻿using System;
 using Exiled.API.Features;
+using Exiled.CustomItems.API;
 using HarmonyLib;
 
 namespace SCP_2158
@@ -19,12 +20,18 @@ namespace SCP_2158
         {
             Instance = this;
             _harmony = new Harmony("ru.morkamo.scp2158.patches");
+            _harmony.PatchAll();
+            
+            Config.Scp2158.Register();
             
             base.OnEnabled();
         }
 
         public override void OnDisabled()
         {
+            Config.Scp2158.Unregister();
+            
+            _harmony.UnpatchAll();
             _harmony = null;
             Instance = null;
             base.OnDisabled();

@@ -12,6 +12,7 @@
         <AssemblyName>SCP_2158</AssemblyName>
         <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
         <PlatformTarget>x64</PlatformTarget>
@@ -38,6 +39,9 @@
         </Reference>
         <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" Private="False">
             <HintPath>..\packages\ExMod.Exiled.9.12.2\lib\net48\Assembly-CSharp-Publicized.dll</HintPath>
+        </Reference>
+        <Reference Include="Assembly-CSharp-firstpass" Private="False">
+          <HintPath>..\..\Libs\Assembly-CSharp-firstpass.dll</HintPath>
         </Reference>
         <Reference Include="CommandSystem.Core, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" Private="False">
             <HintPath>..\packages\ExMod.Exiled.9.12.2\lib\net48\CommandSystem.Core.dll</HintPath>
@@ -66,6 +70,15 @@
         <Reference Include="LabApi, Version=1.1.1.0, Culture=neutral, processorArchitecture=Amd64" Private="False">
             <HintPath>..\packages\Northwood.LabAPI.1.1.1\lib\net48\LabApi.dll</HintPath>
         </Reference>
+        <Reference Include="Mirror" Private="False">
+          <HintPath>..\..\Libs\Mirror.dll</HintPath>
+        </Reference>
+        <Reference Include="Mirror.Components" Private="False">
+          <HintPath>..\..\Libs\Mirror.Components.dll</HintPath>
+        </Reference>
+        <Reference Include="mscorlib" Private="False">
+          <HintPath>..\..\Libs\mscorlib.dll</HintPath>
+        </Reference>
         <Reference Include="NorthwoodLib, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL" Private="False">
             <HintPath>..\packages\ExMod.Exiled.9.12.2\lib\net48\NorthwoodLib.dll</HintPath>
         </Reference>
@@ -76,12 +89,25 @@
         <Reference Include="System.Core" Private="False"/>
         <Reference Include="System.Data" Private="False"/>
         <Reference Include="System.Xml" Private="False"/>
+        <Reference Include="UnityEngine" Private="False">
+          <HintPath>..\..\Libs\UnityEngine.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.CoreModule" Private="False">
+          <HintPath>..\..\Libs\UnityEngine.CoreModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.PhysicsModule" Private="False">
+          <HintPath>..\..\Libs\UnityEngine.PhysicsModule.dll</HintPath>
+        </Reference>
         <Reference Include="YamlDotNet, Version=11.0.0.0, Culture=neutral, PublicKeyToken=ec19458f3c15af5e, processorArchitecture=MSIL" Private="False">
             <HintPath>..\packages\YamlDotNet.11.0.1\lib\net45\YamlDotNet.dll</HintPath>
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Components\Scp2158Component.cs" />
         <Compile Include="Config.cs" />
+        <Compile Include="Features\CoroutineRunner.cs" />
+        <Compile Include="Features\HighlightManager.cs" />
+        <Compile Include="Handlers\Scp2158Handler.cs" />
         <Compile Include="Plugin.cs" />
         <Compile Include="Properties\AssemblyInfo.cs"/>
     </ItemGroup>
