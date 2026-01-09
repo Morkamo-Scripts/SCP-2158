@@ -107,6 +107,7 @@
         <Compile Include="Config.cs" />
         <Compile Include="Features\CoroutineRunner.cs" />
         <Compile Include="Features\HighlightManager.cs" />
+        <Compile Include="Handlers\Scp2158Alt1Handler.cs" />
         <Compile Include="Handlers\Scp2158Handler.cs" />
         <Compile Include="Plugin.cs" />
         <Compile Include="Properties\AssemblyInfo.cs"/>

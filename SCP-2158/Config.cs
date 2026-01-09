@@ -9,5 +9,6 @@ namespace SCP_2158
         public bool Debug { get; set; } = false;
 
         public Scp2158Handler Scp2158 { get; set; } = new();
+        public Scp2158Alt1Handler Scp2158Alt1 { get; set; } = new();
     }
 }

@@ -6,7 +6,6 @@ namespace SCP_2158.Components
 {
     public abstract class Scp2158Component : CustomWeapon
     {
-        public override ItemType Type { get; set; } = ItemType.GunRevolver;
         public override SpawnProperties SpawnProperties { get; set; } = null;
         public override float Weight { get; set; } = 2;
         

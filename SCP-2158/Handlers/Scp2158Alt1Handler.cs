@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.ComponentModel;
+using System.Linq;
 using CustomPlayerEffects;
 using Exiled.API.Enums;
 using Exiled.API.Features;
@@ -26,40 +27,32 @@ using Round = Exiled.API.Features.Round;
 
 namespace SCP_2158.Handlers;
 
-public class Scp2158Handler : Scp2158Component
+public class Scp2158Alt1Handler : Scp2158Component
 {
-    public override uint Id { get; set; } = 8;
-    public override string Name { get; set; } = "SCP-2158";
-    public override string Description { get; set; } = "<b><color=#00F3F7>Револьвер не знающий промаха.\nНо целиться бы все равно не помешало...</color>";
-    public override byte ClipSize { get; set; } = 5;
+    public override uint Id { get; set; } = 91;
+    public override string Name { get; set; } = "SCP-2158-ALT-1";
+    public override string Description { get; set; } = "<b><color=#00ffbf>Анигилирующий автомат.\nПри стрельбе можно не целиться...</color>";
     
-    public override ItemType Type { get; set; } = ItemType.GunRevolver;
+    public override ItemType Type { get; set; } = ItemType.GunE11SR;
     
     public override bool EnableHighlight { get; set; } = true;
-    public override string HighlightColor { get; set; } = Color.magenta.ToHex();
-    public string HighlightSecondColor { get; set; } = Color.red.ToHex();
-    public override float HighlightRange { get; set; } = 0.7f;
-    public override float HighlightIntensity { get; set; } = 4f;
+    public override string HighlightColor { get; set; } = "#00ffbf";
+    public string HighlightSecondColor { get; set; } = Color.white.ToHex();
+    public override float HighlightRange { get; set; } = 0.9f;
+    public override float HighlightIntensity { get; set; } = 5f;
     
     public override bool EnableParticles { get; set; } = true;
-    public override Vector3 SpawnRange { get; set; } = new(0.7f, 0.7f, 0.7f);
-    public override float ParticleSize { get; set; } = 0.1f;
+    public override Vector3 SpawnRange { get; set; } = new(1.2f, 1.2f, 1.2f);
+    public override float ParticleSize { get; set; } = 0.2f;
     public override ushort Intensity { get; set; } = 5;
     
     [Description("Это сообщение появляется когда игрок подбирает предмет с земли.")]
-    public override string PickupMessage { get; set; } = "<size=35><color=#d18f00><b>Ты подобрал SCP-2158.</b>\n" +
-                                                         "<i><color=#00F3F7>Револьвер не знающий промаха.\n" +
-                                                         "Но целиться бы все равно не помешало...</i></color></size>";
+    public override string PickupMessage { get; set; } = "<size=35><color=#d18f00><b>Ты подобрал SCP-2158-ALT-1.</b>\n" +
+                                                         "<i><color=#00ffbf>Анигилирующий автомат.\n" +
+                                                         "При стрельбе можно не целиться...</i></color></size>";
     public override ushort CustomItemPickupMessageDuration { get; set; } = 5;
     public override ushort CustomItemSelectMessageDuration { get; set; } = 3;
     public override ushort PickupMessageVerticalPosition { get; set; } = 400;
-
-    public override AttachmentName[] Attachments { get; set; } =
-    [
-        AttachmentName.ExtendedBarrel,
-        AttachmentName.CylinderMag5,
-        AttachmentName.ExtendedStock
-    ];
 
     protected override void SubscribeEvents()
     {
@@ -104,35 +97,19 @@ public class Scp2158Handler : Scp2158Component
     {
         Vector3 from = ev.Player.CameraTransform.position;
         Vector3 to = ev.RaycastHit.point;
-        float radius = 0.8f;
+        float radius = 6;
         bool isDryShot = true;
 
         /*BulletTrace(from + ev.Player.CameraTransform.forward * 3f, to, radius);*/
         
-        if (ev.Hitbox != null)
-        {
-            var target = Player.Get(ev.Hitbox.TargetHub);
-            
-            if (target.Role.Team.GetFaction() == ev.Player.Role.Team.GetFaction())
-                return;
-
-            if (target.IsGodModeEnabled)
-                return;
-            
-            if (target.IsSpawnProtected || ev.Player.GetEffect<SpawnProtected>().Intensity > 0)
-                return;
-            
-            BulletTrace(from + ev.Player.CameraTransform.forward * 1.2f, 
-                ev.Hitbox.transform.position, 0.055f, 0.6f, Color.cyan, 15f);
-            isDryShot = false;
-            return;
-        }
-
         if (CheckCapsuleHit(from + ev.Player.CameraTransform.forward, to, radius, out var hitbox))
         {
             isDryShot = false;
             
             var target = Player.Get(hitbox.TargetHub);
+            
+            if (target == ev.Player)
+                return;
 
             if (target.Role.Team.GetFaction() == ev.Player.Role.Team.GetFaction())
                 return;
@@ -143,33 +120,37 @@ public class Scp2158Handler : Scp2158Component
             if (target.IsSpawnProtected || ev.Player.GetEffect<SpawnProtected>().Intensity > 0)
                 return;
 
-            var damage = ev.Firearm.Damage;
+            var damage = ev.Firearm.Damage * 2;
 
-            if (hitbox.name == "Head")
-                damage *= 2;
+            var headHitbox = target.GameObject
+                .GetComponentsInChildren<HitboxIdentity>()
+                .FirstOrDefault(h => h.HitboxType == HitboxType.Headshot);
             
-            CurvedBulletTrace(
-                from + ev.Player.CameraTransform.forward * 0.2f,
-                hitbox.transform.position,
-                ev.Player.CameraTransform.forward,
-                segments: 18,
-                curveStrength: 0.35f,
-                color: Color.cyan
-            );
-
-            target.Hurt(ev.Player, damage, DamageType.Revolver);
+            if (headHitbox != null)
+                CurvedBulletTrace(
+                    from + ev.Player.CameraTransform.forward * 0.2f,
+                    headHitbox.transform.position,
+                    ev.Player.CameraTransform.forward,
+                    segments: 18,
+                    curveStrength: 0.35f,
+                    color: Color.magenta
+                );
+            else
+                CurvedBulletTrace(
+                    from + ev.Player.CameraTransform.forward * 0.2f,
+                    hitbox.transform.position,
+                    ev.Player.CameraTransform.forward,
+                    segments: 14,
+                    curveStrength: 0.25f,
+                    color: Color.red
+                );
+            
+            target.Hurt(ev.Player, damage, DamageType.E11Sr);
             ev.Player.ShowHitMarker();
         }
         
         if (isDryShot)
-            CurvedBulletTrace(
-                from + ev.Player.CameraTransform.forward * 0.2f,
-                hitbox.transform.position,
-                ev.Player.CameraTransform.forward,
-                segments: 18,
-                curveStrength: 0.35f,
-                color: Color.white
-            );
+            BulletTrace(from + ev.Player.CameraTransform.forward * 0.2f, to, 0.055f, 0.6f, Color.white, 15f);
         
         base.OnShot(ev);
     }
@@ -261,13 +242,13 @@ public class Scp2158Handler : Scp2158Component
         {
             RueDisplay.Get(player).Show(
                 new Tag(),
-                new BasicElement(150, "<size=25><b><color=#F79100>Вы используете SCP-2158.\nПопадать в цель стало проще!</color></b></size>"), 1.1f);
+                new BasicElement(130, "<size=40><i><color=#00ffbf>Вы используете SCP-2158-ALT-1.\nПри стрельбе можно не целиться...</color></b></size>"), 1.1f);
 
             foreach (var spec in player.CurrentSpectatingPlayers)
             {
                 RueDisplay.Get(spec).Show(
                     new Tag(),
-                    new BasicElement(150, "<size=25><b><color=#F79100>Игрок использует SCP-2158!\n<i>~Револьвер не знающий промаха.</i></color></b></size>"), 1.1f);
+                    new BasicElement(130, "<size=40><i><color=#00ffbf>Игрок использует SCP-2158-ALT-1!\n<i>~Анигилирующий автомат.</i></color></b></size>"), 1.1f);
                     
                 Timing.CallDelayed(1.2f, () => RueDisplay.Get(spec).Update());
             }
