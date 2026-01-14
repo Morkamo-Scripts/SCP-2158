@@ -67,7 +67,6 @@ public class Scp2158Handler : Scp2158Component
         events.Player.ChangedItem += OnChangedItem;
         events.Player.DroppedItem += OnDroppedItem;
         events.Player.ItemAdded += OnGetItem;
-        events.Item.InspectingItem += OnSpinningRevolver;
         LabApi.Events.Handlers.ServerEvents.PickupCreated += OnPickupCreated;
         base.SubscribeEvents();
     }
@@ -78,15 +77,8 @@ public class Scp2158Handler : Scp2158Component
         events.Player.ChangedItem -= OnChangedItem;
         events.Player.DroppedItem -= OnDroppedItem;
         events.Player.ItemAdded -= OnGetItem;
-        events.Item.InspectingItem -= OnSpinningRevolver;
         LabApi.Events.Handlers.ServerEvents.PickupCreated -= OnPickupCreated;
         base.UnsubscribeEvents();
-    }
-
-    private void OnSpinningRevolver(InspectingItemEventArgs ev)
-    {
-        var revolver = Item.Get(ev.Item.Base) as RevolverFirearm;
-        revolver?.TrySpin();
     }
     
     private void OnGetItem(ItemAddedEventArgs ev)
